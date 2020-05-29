@@ -82,7 +82,6 @@ const gameBoard = (() => {
     function _checkWin() {
         let moves = currentPlayer.moves
         if (moves.length < 3) return
-        if (_checkTie()) return
         moves.sort((a,b) => a > b ? 1 : -1);
         let Acell = moves.filter(cell => {
             if (cell.charAt(0) == "A")
@@ -121,13 +120,12 @@ const gameBoard = (() => {
             return (cellblock == 3);
         });
         if (newarray) return _endSequence("win")
+        _checkTie();
     }
     function _checkTie() {
         if (playerOne.moves.length > 3 && playerTwo.moves.length > 3) {
             _endSequence("tie");
-            return true;
         }
-        return false
         
     }
 

@@ -35,13 +35,14 @@ const gameBoard = (() => {
                 let cell = event.currentTarget
                 if (cell.textContent == '') {
                 _playerMove(cell);
-                _changePlayer()
-                _checkWin()
+                _checkWin();
+                _changePlayer();
                 }
             })
         })
     }
     function _displayController() {
+        const $gameBoard = document.getElementById('game-board');
         function createGameBoard() {
             const newGameBoard = document.createElement('div');
             newGameBoard.setAttribute('id', 'game-board');
@@ -49,7 +50,7 @@ const gameBoard = (() => {
 
         }
         function renderGameboard() {
-            const $gameBoard = document.getElementById('game-board');
+            
             gameBoard.map(cell => {
                 const newCell = document.createElement('div');
                 newCell.classList.add('cell');
@@ -58,7 +59,14 @@ const gameBoard = (() => {
             });
         }
 
-        return {renderGameboard, createGameBoard}
+        function cleanBoard() {
+            $body.removeChild($gameBoard);
+            playerOne.moves = [];
+            playerTwo.moves = [];
+            _init();
+        }
+
+        return {renderGameboard, createGameBoard, cleanBoard}
     }
     function _playerMove(cell) {
         cell.textContent = currentPlayer.playerSymbol
@@ -72,10 +80,68 @@ const gameBoard = (() => {
     }
 
     function _checkWin() {
-        currentPlayer.moves.filter(cell =>
-            cell)
+        let moves = currentPlayer.moves
+        if (moves.length < 3) return
+        if (_checkTie()) return
+        moves.sort((a,b) => a > b ? 1 : -1);
+        let Acell = moves.filter(cell => {
+            if (cell.charAt(0) == "A")
+            return true
+        })
+        let Bcell = moves.filter(cell => {
+            if (cell.charAt(0) == "B")
+            return true
+        })
+        let Ccell = moves.filter(cell => {
+            if (cell.charAt(0) == "C")
+            return true
+        })
+        let oneCell = moves.filter(cell => {
+            if (cell.charAt(1) == "1")
+            return true
+        })
+        let twoCell = moves.filter(cell => {
+            if (cell.charAt(1) == "2")
+            return true
+        })
+        let threeCell = moves.filter(cell => {
+            if (cell.charAt(1) == "3")
+            return true
+        })
+        let diagTwo = moves.filter(cell => {
+            if (cell == "C1" || cell == "B2" || cell == "A3")
+            return true
+        })
+        let diagOne = moves.filter(cell => {
+            if (cell == "A1" || cell == "B2" || cell == "C3")
+            return true
+        })
+        let array = [Acell.length, Bcell.length, Ccell.length, oneCell.length, twoCell.length, threeCell.length, diagOne.length, diagTwo.length];
+        let newarray = array.some(cellblock => {
+            return (cellblock == 3);
+        });
+        if (newarray) return _endSequence("win")
     }
-    
+    function _checkTie() {
+        if (playerOne.moves.length > 3 && playerTwo.moves.length > 3) {
+            _endSequence("tie");
+            return true;
+        }
+        return false
+        
+    }
+
+    function _alertTie() {
+        alert("It's a tie!")
+    }
+    function _alertWinner() {
+        alert(currentPlayer.name + " has won!");
+    }
+
+    function _endSequence(end) {
+        (end == "win") ? _alertWinner() : _alertTie();
+        _displayController().cleanBoard();
+    }
     //public
     return {
         gameBoard

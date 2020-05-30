@@ -8,68 +8,44 @@ const playerFactory = (name, id) => {
     return {name, playerSymbol, moves, points}
 }
 
-const $body = document.querySelector('body');
 const jeff = playerFactory('jeff', 'player-one')
 const computer = playerFactory('computer', 'computer')
-let gameBoard = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3'];
 
-let playerOne = jeff;
-let playerTwo = computer;
 
-const displayController = (() => {
-    const $gameBoard = document.getElementById('game-board');
+const gameBoard = (() => {
+
+    const $body = document.querySelector('body');
+    let gameBoard = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3'];
+    let $gameBoard 
+    let playerOne
+    let playerTwo
+    let currentPlayer
+    let displayCurrentPlayer;
+    let displayPointsOne;
+    let displayPointsTwo;
+
+    function init() {
+        createGameBoard()
+        renderGameboard()
+        renderTurn()
+        renderPlayscore()
+    }
+
     function createGameBoard() {
         const newGameBoard = document.createElement('div');
         newGameBoard.setAttribute('id', 'game-board');
         $body.appendChild(newGameBoard)
-
+        $gameBoard = document.getElementById('game-board');
     }
     function renderGameboard() {
         
-        gameBoard.gameBoard.map(cell => {
+        gameBoard.map(cell => {
             const newCell = document.createElement('div');
             newCell.classList.add('cell');
             newCell.setAttribute('id', cell);
             $gameBoard.appendChild(newCell);
         });
-    }
 
-    function cleanBoard() {
-        $body.removeChild($gameBoard);
-        playerOne.moves = [];
-        playerTwo.moves = [];
-        gameBoard().init();
-    }
-
-    return {
-        renderGameboard, createGameBoard, cleanBoard,
-    }
-})();
-
-
-const gameBoard = (() => {
-    //private
-
-    let displayCurrentPlayer;
-    let displayPointsOne;
-    let displayPointsTwo;
-    currentPlayer = playerOne;
-   
-    //cacheDOM
-    
-    
-    
-    init()
-
-    
-    function init() {
-        let currentPlayer = playerOne;
-        displayCurrentPlayer = document.createElement('h3');
-        $body.appendChild(displayCurrentPlayer);
-        displayCurrentPlayer.textContent = "Turn of " + currentPlayer.name
-        displayController.createGameBoard()
-        displayController.renderGameboard()
-        console.log(currentPlayer)
         const cells = document.querySelectorAll('.cell');
         cells.forEach((div) => {
             div.addEventListener('click', (e) =>  {
@@ -81,13 +57,29 @@ const gameBoard = (() => {
                 }
             })
         })
+    }
+
+    function renderTurn() {
+        displayCurrentPlayer = document.createElement('h3');
+        $body.appendChild(displayCurrentPlayer);
+        displayCurrentPlayer.textContent = "Turn of " + currentPlayer.name
+    }
+
+    function renderPlayscore() {
         displayPointsOne = document.createElement('p');
         displayPointsTwo = document.createElement('p');
         $body.appendChild(displayPointsOne);
         $body.appendChild(displayPointsTwo);
         _adjournPoints()
     }
-    
+
+    function _cleanBoard() {
+        $body.removeChild($gameBoard);
+        playerOne.moves = [];
+        playerTwo.moves = [];
+        init();
+    }
+
     function _playerMove(cell) {
         cell.textContent = currentPlayer.playerSymbol
         currentPlayer.moves.push(cell.id)
@@ -96,8 +88,10 @@ const gameBoard = (() => {
         currentPlayer == playerOne ? currentPlayer = playerTwo : currentPlayer = playerOne;
         displayCurrentPlayer.textContent = "Turn of " + currentPlayer.name
     }
-    function _setPlayers() {
-
+    function setPlayers(playerOnes, playerTwos) {
+        playerOne = playerOnes;
+        playerTwo = playerTwos;
+        currentPlayer = playerOne
     }
 
     function _checkWin() {
@@ -167,7 +161,7 @@ const gameBoard = (() => {
         $body.removeChild(displayCurrentPlayer);
         $body.removeChild(displayPointsOne);
         $body.removeChild(displayPointsTwo)
-        _displayController().cleanBoard();
+        _cleanBoard();
 
     }
     function _adjournPoints() {
@@ -180,10 +174,29 @@ const gameBoard = (() => {
         playerOne.points = 0;
         playerTwo.points = 0;
     }
-    //public
     return {
-        gameBoard, init
+        createGameBoard, renderGameboard, setPlayers, renderTurn, renderPlayscore
     }
 })();
 
 
+const displayController = (() => {
+    initGame(jeff, computer);
+
+    function init() {
+        //display "choose player screen"
+    }
+    function initGame(playerOne, playerTwo) {
+
+        gameBoard.createGameBoard()
+        gameBoard.renderGameboard()
+        gameBoard.setPlayers(playerOne,playerTwo)
+        gameBoard.renderTurn()
+        gameBoard.renderPlayscore()
+    }
+ 
+
+    return {
+        
+    }
+})();

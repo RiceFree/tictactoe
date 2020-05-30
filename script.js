@@ -1,10 +1,11 @@
 const playerFactory = (name, id) => {
     const playerSymbol = _setSymbol()
     let moves = [];
+    let points = 0;
     function _setSymbol() {
        return (id === 'player-one' ? 'X' : 'O');
     }
-    return {name, playerSymbol, moves}
+    return {name, playerSymbol, moves, points}
 }
 
 
@@ -15,6 +16,9 @@ const gameBoard = (() => {
     //private
     playerOne = jeff;
     playerTwo = computer;
+    let displayCurrentPlayer;
+    let displayPointsOne;
+    let displayPointsTwo;
     currentPlayer = playerOne;
     let gameBoard = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3']
     //cacheDOM
@@ -25,9 +29,12 @@ const gameBoard = (() => {
 
     
     function _init() {
+        let currentPlayer = playerOne;
+        displayCurrentPlayer = document.createElement('h3');
+        $body.appendChild(displayCurrentPlayer);
+        displayCurrentPlayer.textContent = "Turn of " + currentPlayer.name
         _displayController().createGameBoard()
         _displayController().renderGameboard()
-        let currentPlayer = playerOne;
         console.log(currentPlayer)
         const cells = document.querySelectorAll('.cell');
         cells.forEach((div) => {
@@ -40,6 +47,11 @@ const gameBoard = (() => {
                 }
             })
         })
+        displayPointsOne = document.createElement('p');
+        displayPointsTwo = document.createElement('p');
+        $body.appendChild(displayPointsOne);
+        $body.appendChild(displayPointsTwo);
+        _adjournPoints()
     }
     function _displayController() {
         const $gameBoard = document.getElementById('game-board');
@@ -74,6 +86,7 @@ const gameBoard = (() => {
     }
     function _changePlayer() {
         currentPlayer == playerOne ? currentPlayer = playerTwo : currentPlayer = playerOne;
+        displayCurrentPlayer.textContent = "Turn of " + currentPlayer.name
     }
     function _setPlayers() {
 
@@ -134,11 +147,30 @@ const gameBoard = (() => {
     }
     function _alertWinner() {
         alert(currentPlayer.name + " has won!");
+        currentPlayer.points += 1;
+        _adjournPoints()
+        if (playerOne.points > 4 || playerTwo.points > 4) {
+            _gameover()
+        }
     }
 
     function _endSequence(end) {
         (end == "win") ? _alertWinner() : _alertTie();
+        $body.removeChild(displayCurrentPlayer);
+        $body.removeChild(displayPointsOne);
+        $body.removeChild(displayPointsTwo)
         _displayController().cleanBoard();
+
+    }
+    function _adjournPoints() {
+        displayPointsOne.textContent = playerOne.name + " score is " + playerOne.points
+        displayPointsTwo.textContent = playerTwo.name + " score is " + playerTwo.points
+    }
+
+    function _gameover() {
+        alert("GAME OVER! " + currentPlayer.name + " has won!");
+        playerOne.points = 0;
+        playerTwo.points = 0;
     }
     //public
     return {

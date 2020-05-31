@@ -23,6 +23,7 @@ const gameBoard = (() => {
     let displayCurrentPlayer;
     let displayPointsOne;
     let displayPointsTwo;
+    let gameBoardDiv;
 
     function init() {
         createGameBoard()
@@ -32,9 +33,12 @@ const gameBoard = (() => {
     }
 
     function createGameBoard() {
+        gameBoardDiv = document.createElement('div')
+        gameBoardDiv.setAttribute('id','gameBoardDiv')
+        $body.appendChild(gameBoardDiv)
         const newGameBoard = document.createElement('div');
         newGameBoard.setAttribute('id', 'game-board');
-        $body.appendChild(newGameBoard)
+        gameBoardDiv.appendChild(newGameBoard)
         $gameBoard = document.getElementById('game-board');
     }
     function renderGameboard() {
@@ -61,25 +65,23 @@ const gameBoard = (() => {
 
     function renderTurn() {
         displayCurrentPlayer = document.createElement('h3');
-        $body.appendChild(displayCurrentPlayer);
+        gameBoardDiv.appendChild(displayCurrentPlayer);
         displayCurrentPlayer.textContent = "Turn of " + currentPlayer.name
     }
 
     function renderPlayscore() {
         displayPointsOne = document.createElement('p');
         displayPointsTwo = document.createElement('p');
-        $body.appendChild(displayPointsOne);
-        $body.appendChild(displayPointsTwo);
+        gameBoardDiv.appendChild(displayPointsOne);
+        gameBoardDiv.appendChild(displayPointsTwo);
         _adjournPoints()
     }
     function deleteAll() {
-        $body.removeChild($gameBoard);
-        $body.removeChild(displayCurrentPlayer)
-        $body.removeChild(displayPointsOne)
-        $body.removeChild(displayPointsTwo)
+        $body.removeChild(gameBoardDiv);
+
     }
     function _cleanBoard() {
-        $body.removeChild($gameBoard);
+        gameBoardDiv.removeChild($gameBoard);
         playerOne.moves = [];
         playerTwo.moves = [];
         init();
@@ -163,9 +165,9 @@ const gameBoard = (() => {
 
     function _endSequence(end) {
         (end == "win") ? _alertWinner() : _alertTie();
-        $body.removeChild(displayCurrentPlayer);
-        $body.removeChild(displayPointsOne);
-        $body.removeChild(displayPointsTwo)
+        gameBoardDiv.removeChild(displayCurrentPlayer);
+        gameBoardDiv.removeChild(displayPointsOne);
+        gameBoardDiv.removeChild(displayPointsTwo)
         _cleanBoard();
 
     }
@@ -195,13 +197,15 @@ const displayController = (() => {
     let startBtn;
     let startBtnDiv;
 
-    let backBtn
+    let backBtn;
+    let backBtnDiv;
 
     init()
     //initGame(jeff, computer);
 
     function renderForm() {
         playerSelectionDiv = document.createElement('div');
+        playerSelectionDiv.setAttribute('id','playerSelDiv')
         $body.appendChild(playerSelectionDiv)
         form = document.createElement('form')
         playerSelectionDiv.appendChild(form);
@@ -247,6 +251,7 @@ const displayController = (() => {
         initGame(playerOne, playerTwo);
     }
     function initGame(playerOne, playerTwo) {
+        renderBackBtn()
 
         gameBoard.createGameBoard()
         gameBoard.renderGameboard()
@@ -254,19 +259,21 @@ const displayController = (() => {
         gameBoard.renderTurn()
         gameBoard.renderPlayscore()
 
-        renderBackBtn()
     }
 
     function renderBackBtn() {
+        backBtnDiv = document.createElement('div')
+        backBtnDiv.setAttribute('id','backBtnDiv')
+        $body.appendChild(backBtnDiv)
         backBtn = document.createElement('button');
         backBtn.setAttribute('id', 'backBtn');
         backBtn.textContent = "NEW GAME"
         backBtn.addEventListener('click', backToPlayerSel)
-        $body.appendChild(backBtn)
+        backBtnDiv.appendChild(backBtn)
     }
     function backToPlayerSel() {
         gameBoard.deleteAll()
-        $body.removeChild(backBtn)
+        $body.removeChild(backBtnDiv)
         renderForm()
     }
 

@@ -7,14 +7,14 @@ const playerFactory = (name, id) => {
     }
     return {name, playerSymbol, moves, points}
 }
-
+const $body = document.querySelector('body');
 const jeff = playerFactory('jeff', 'player-one')
 const computer = playerFactory('computer', 'computer')
 
 
 const gameBoard = (() => {
 
-    const $body = document.querySelector('body');
+   
     let gameBoard = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3'];
     let $gameBoard 
     let playerOne
@@ -72,7 +72,12 @@ const gameBoard = (() => {
         $body.appendChild(displayPointsTwo);
         _adjournPoints()
     }
-
+    function deleteAll() {
+        $body.removeChild($gameBoard);
+        $body.removeChild(displayCurrentPlayer)
+        $body.removeChild(displayPointsOne)
+        $body.removeChild(displayPointsTwo)
+    }
     function _cleanBoard() {
         $body.removeChild($gameBoard);
         playerOne.moves = [];
@@ -175,16 +180,71 @@ const gameBoard = (() => {
         playerTwo.points = 0;
     }
     return {
-        createGameBoard, renderGameboard, setPlayers, renderTurn, renderPlayscore
+        createGameBoard, renderGameboard, setPlayers, renderTurn, renderPlayscore, deleteAll
     }
 })();
 
 
 const displayController = (() => {
-    initGame(jeff, computer);
+    let playerSelectionDiv;
+    let form;
+    let labelOne;
+    let labelTwo;
+    let nameInputOne;
+    let nameInputTwo;
+    let startBtn;
+    let startBtnDiv;
+
+    let backBtn
+
+    init()
+    //initGame(jeff, computer);
+
+    function renderForm() {
+        playerSelectionDiv = document.createElement('div');
+        $body.appendChild(playerSelectionDiv)
+        form = document.createElement('form')
+        playerSelectionDiv.appendChild(form);
+        labelOne = document.createElement('label');
+        labelOne.setAttribute('for', 'pOne')
+        labelOne.textContent = "Player 1";
+        form.appendChild(labelOne);   
+        nameInputOne = document.createElement('input')
+        nameInputOne.setAttribute('id', 'pOne');
+        nameInputOne.setAttribute('type', 'text');
+        nameInputOne.setAttribute('placeholder', 'Name');
+        form.appendChild(nameInputOne);
+        labelTwo = document.createElement('label');
+        labelTwo.setAttribute('for', 'pTwo')
+        labelTwo.textContent = "Player 2";
+        form.appendChild(labelTwo);
+        nameInputTwo = document.createElement('input')
+        nameInputTwo.setAttribute('id', 'pTwo');
+        nameInputTwo.setAttribute('type', 'text');
+        nameInputTwo.setAttribute('placeholder', 'Name');
+        form.appendChild(nameInputTwo);
+        startBtnDiv = document.createElement('div');
+        startBtnDiv.setAttribute('id', 'startBtnDiv');
+        playerSelectionDiv.appendChild(startBtnDiv);
+        startBtn = document.createElement('button');
+        startBtn.setAttribute('id', 'startBtn')
+        startBtn.textContent = "START"
+        startBtn.addEventListener('click', startGame)
+        startBtnDiv.appendChild(startBtn);
+    }
 
     function init() {
-        //display "choose player screen"
+        renderForm()
+    }
+
+    function startGame() {
+        //check value
+        let playerOneName = nameInputOne.value
+        let playerTwoName = nameInputTwo.value
+        let playerOne = playerFactory(playerOneName, 'player-one');
+        let playerTwo = playerFactory(playerTwoName, 'player-two');
+        $body.removeChild(playerSelectionDiv)
+        initGame(playerOne, playerTwo);
     }
     function initGame(playerOne, playerTwo) {
 
@@ -193,8 +253,22 @@ const displayController = (() => {
         gameBoard.setPlayers(playerOne,playerTwo)
         gameBoard.renderTurn()
         gameBoard.renderPlayscore()
+
+        renderBackBtn()
     }
- 
+
+    function renderBackBtn() {
+        backBtn = document.createElement('button');
+        backBtn.setAttribute('id', 'backBtn');
+        backBtn.textContent = "NEW GAME"
+        backBtn.addEventListener('click', backToPlayerSel)
+        $body.appendChild(backBtn)
+    }
+    function backToPlayerSel() {
+        gameBoard.deleteAll()
+        $body.removeChild(backBtn)
+        renderForm()
+    }
 
     return {
         
